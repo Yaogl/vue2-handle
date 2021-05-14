@@ -4,7 +4,6 @@ class Watcher {
         this.expr = expr
         this.cb = cb
         // 现获取一下老值
-
         this.value = this.get()
     }
     getVal (vm, expr) {

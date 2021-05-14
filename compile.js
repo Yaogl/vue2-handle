@@ -69,6 +69,18 @@ CompileUtil = {
             return prev[next]
         }, vm.$data)
     },
+    setVal (vm, expr, value) {
+        expr = expr.trim().split('.')
+        let val = vm.$data
+        expr.forEach(function(k, i) {
+            // 非最后一个key，更新val的值
+            if (i < expr.length - 1) {
+                val = val[k];
+            } else {
+                val[k] = value;
+            }
+        })
+    },
     getTextVal (vm, expr) {
         return expr.replace(/\{\{([^}]+)\}\}/g, (...arguments) => {
             return this.getVal(vm, arguments[1])
@@ -93,6 +105,15 @@ CompileUtil = {
         new Watcher(vm, expr, (newVal) => {
             updateFn && updateFn(node, this.getVal(vm, expr))
         })
+
+        const val = this.getVal(vm, expr)
+        node.addEventListener('input', (e) => {
+            var newValue = e.target.value;
+            if (val === newValue) {
+                return;
+            }
+            this.setVal(vm, expr, newValue)
+        })
         updateFn && updateFn(node, this.getVal(vm, expr))
     },
     updater: {
@@ -100,7 +121,7 @@ CompileUtil = {
             node.textContent = value
         },
         modelUpdater (node, value) {
-            console.log(value)
+            console.log(value);
             node.value = value
         }
     }
